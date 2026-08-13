@@ -23,6 +23,7 @@ body {
     color: var(--text);
     user-select: none;
     /* Prevent text selection */
+    touch-action: none;
 }
 
 /* Three.js Canvas setup */

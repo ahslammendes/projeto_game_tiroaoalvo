@@ -14,6 +14,8 @@ let cylinderRotation = 0;
 // Mobile touch variables
 let lastTouchX = 0;
 let lastTouchY = 0;
+let touchStartX = 0;
+let touchStartY = 0;
 let touchMoved = false;
 let isTouchDevice = false;
 
@@ -293,8 +295,10 @@ function onTouchStart(event) {
     if (gameOverScreen.classList.contains('active')) return;
     
     if (event.touches.length > 0) {
-        lastTouchX = event.touches[0].clientX;
-        lastTouchY = event.touches[0].clientY;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        lastTouchX = touchStartX;
+        lastTouchY = touchStartY;
         touchMoved = false;
         
         if (event.target.tagName !== 'BUTTON') {
@@ -311,9 +315,14 @@ function onTouchMove(event) {
     if (!isPlaying) return;
     
     if (event.touches.length > 0) {
-        touchMoved = true;
         const currentX = event.touches[0].clientX;
         const currentY = event.touches[0].clientY;
+        
+        // Check if moved more than 10 pixels to consider it a drag
+        const dist = Math.hypot(currentX - touchStartX, currentY - touchStartY);
+        if (dist > 10) {
+            touchMoved = true;
+        }
         
         const deltaX = currentX - lastTouchX;
         const deltaY = currentY - lastTouchY;

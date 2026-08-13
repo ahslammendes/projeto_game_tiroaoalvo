@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,17 @@
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
+
 <body>
     <!-- UI Overlay -->
     <div id="ui-container">
         <div id="start-screen" class="screen active">
             <h1>Tiro ao Alvo 3D</h1>
-            <p>Clique na tela para iniciar.</p>
-            <p>Mova o mouse para mirar, clique para atirar.</p>
+            <p>Clique ou toque na tela para iniciar.</p>
+            <p><strong>PC:</strong> Mova o mouse para mirar, clique para atirar.</p>
+            <p><strong>Celular:</strong> Arraste para mirar, toque rápido para atirar.</p>
         </div>
-        
+
         <div id="hud" class="screen">
             <div class="hud-top">
                 <div class="score-container">Pontuação: <span id="score">0</span></div>
@@ -38,7 +41,8 @@
     </div>
 
     <!-- 3D Canvas will be injected here by Three.js -->
-    
+
     <script src="script.js"></script>
 </body>
+
 </html>

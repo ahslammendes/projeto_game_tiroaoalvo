@@ -10,6 +10,12 @@ let timeLeft = 60;
 let timerInterval;
 let lastTime = 0;
 
+// Mobile touch variables
+let lastTouchX = 0;
+let lastTouchY = 0;
+let touchMoved = false;
+let isTouchDevice = false;
+
 // UI Elements
 const startScreen = document.getElementById('start-screen');
 const hud = document.getElementById('hud');
@@ -60,7 +66,12 @@ function init() {
     window.addEventListener('resize', onWindowResize);
     document.addEventListener('mousedown', onClick);
     document.addEventListener('mousemove', onMouseMove);
-    restartBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', onRestartClick);
+    
+    // Touch Events for Mobile
+    document.addEventListener('touchstart', onTouchStart, { passive: false });
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend', onTouchEnd, { passive: false });
 }
 
 function createEnvironment() {
@@ -243,6 +254,7 @@ function createExplosion(position, color = 0xffd700) {
 }
 
 function onClick(event) {
+    if (isTouchDevice) return; // Prevent double firing on touch devices
     if (gameOverScreen.classList.contains('active')) return;
     
     // Only request pointer lock if clicking on the main canvas/game screen
@@ -257,6 +269,7 @@ function onClick(event) {
 }
 
 document.addEventListener('pointerlockchange', () => {
+    if (isTouchDevice) return;
     if (document.pointerLockElement === document.body) {
         if (!isPlaying && timeLeft > 0) startGame();
         else if (timeLeft > 0) resumeGame();
@@ -264,6 +277,74 @@ document.addEventListener('pointerlockchange', () => {
         pauseGame();
     }
 });
+
+function onRestartClick(event) {
+    if (!isTouchDevice) {
+        startGame();
+        document.body.requestPointerLock();
+    } else {
+        startGame();
+    }
+}
+
+function onTouchStart(event) {
+    isTouchDevice = true;
+    if (gameOverScreen.classList.contains('active')) return;
+    
+    if (event.touches.length > 0) {
+        lastTouchX = event.touches[0].clientX;
+        lastTouchY = event.touches[0].clientY;
+        touchMoved = false;
+        
+        if (event.target.tagName !== 'BUTTON') {
+            event.preventDefault(); // Prevent double tap zoom/scroll
+        }
+
+        if (!isPlaying && event.target !== restartBtn) {
+            startGame();
+        }
+    }
+}
+
+function onTouchMove(event) {
+    if (!isPlaying) return;
+    
+    if (event.touches.length > 0) {
+        touchMoved = true;
+        const currentX = event.touches[0].clientX;
+        const currentY = event.touches[0].clientY;
+        
+        const deltaX = currentX - lastTouchX;
+        const deltaY = currentY - lastTouchY;
+        
+        const sensitivity = 0.005; // Slightly higher sensitivity for touch
+        camera.rotation.y -= deltaX * sensitivity;
+        camera.rotation.x -= deltaY * sensitivity;
+        
+        // Clamp vertical rotation
+        camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+        
+        lastTouchX = currentX;
+        lastTouchY = currentY;
+        
+        if (event.target.tagName !== 'BUTTON') {
+            event.preventDefault();
+        }
+    }
+}
+
+function onTouchEnd(event) {
+    if (!isPlaying) return;
+    
+    // If it was a quick tap (no drag movement), we shoot
+    if (!touchMoved) {
+        shoot();
+    }
+    
+    if (event.target.tagName !== 'BUTTON') {
+        event.preventDefault();
+    }
+}
 
 function onMouseMove(event) {
     if (document.pointerLockElement === document.body) {

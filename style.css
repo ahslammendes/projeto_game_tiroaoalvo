@@ -163,44 +163,17 @@ span#timer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
 }
 
-#crosshair .dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
-    background-color: var(--primary);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--primary);
-}
-
-#crosshair .line {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-}
-
-#crosshair .horizontal {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 15%, rgba(255, 255, 255, 0.9) 35%, transparent 35%, transparent 65%, rgba(255, 255, 255, 0.9) 65%, rgba(255, 255, 255, 0.9) 85%, transparent 100%);
-}
-
-#crosshair .vertical {
-    left: 50%;
-    top: 0;
-    height: 100%;
-    width: 2px;
-    transform: translateX(-50%);
-    background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.9) 15%, rgba(255, 255, 255, 0.9) 35%, transparent 35%, transparent 65%, rgba(255, 255, 255, 0.9) 65%, rgba(255, 255, 255, 0.9) 85%, transparent 100%);
+#crosshair svg {
+    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* Responsividade Mobile */

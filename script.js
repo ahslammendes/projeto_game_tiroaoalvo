@@ -9,6 +9,7 @@ let score = 0;
 let timeLeft = 60;
 let timerInterval;
 let lastTime = 0;
+let cylinderRotation = 0;
 
 // Mobile touch variables
 let lastTouchX = 0;
@@ -359,6 +360,13 @@ function onMouseMove(event) {
 }
 
 function shoot() {
+    // Spin the revolver cylinder crosshair
+    cylinderRotation += 60;
+    const crosshairSvg = document.querySelector('#crosshair svg');
+    if (crosshairSvg) {
+        crosshairSvg.style.transform = `rotate(${cylinderRotation}deg)`;
+    }
+
     // Screen center raycast
     raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
     

@@ -27,9 +27,37 @@
             </div>
             <!-- Crosshair -->
             <div id="crosshair">
-                <div class="dot"></div>
-                <div class="line horizontal"></div>
-                <div class="line vertical"></div>
+                <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#999;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#eee;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#555;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="hole" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#000" />
+                            <stop offset="100%" stop-color="#333" />
+                        </radialGradient>
+                    </defs>
+                    <!-- Main Cylinder Body -->
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="url(#metal)" stroke-width="6" opacity="0.8"/>
+                    
+                    <!-- Bullet Chambers (6 chambers) -->
+                    <circle cx="50" cy="18" r="7" fill="url(#hole)" stroke="#666" stroke-width="1" opacity="0.8"/>
+                    <circle cx="77.7" cy="34" r="7" fill="url(#hole)" stroke="#666" stroke-width="1" opacity="0.8"/>
+                    <circle cx="77.7" cy="66" r="7" fill="url(#hole)" stroke="#666" stroke-width="1" opacity="0.8"/>
+                    <circle cx="50" cy="82" r="7" fill="url(#hole)" stroke="#666" stroke-width="1" opacity="0.8"/>
+                    <circle cx="22.3" cy="66" r="7" fill="url(#hole)" stroke="#666" stroke-width="1" opacity="0.8"/>
+                    <circle cx="22.3" cy="34" r="7" fill="url(#hole)" stroke="#666" stroke-width="1" opacity="0.8"/>
+                    
+                    <!-- Center Aim (Red Dot and thin cross) -->
+                    <circle cx="50" cy="50" r="2" fill="#ff3366" />
+                    <circle cx="50" cy="50" r="12" fill="none" stroke="#ff3366" stroke-width="1.5" opacity="0.8"/>
+                    <line x1="50" y1="38" x2="50" y2="46" stroke="#ff3366" stroke-width="1.5" />
+                    <line x1="50" y1="54" x2="50" y2="62" stroke="#ff3366" stroke-width="1.5" />
+                    <line x1="38" y1="50" x2="46" y2="50" stroke="#ff3366" stroke-width="1.5" />
+                    <line x1="54" y1="50" x2="62" y2="50" stroke="#ff3366" stroke-width="1.5" />
+                </svg>
             </div>
         </div>
 

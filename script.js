@@ -14,9 +14,8 @@ let cylinderRotation = 0;
 // Mobile touch variables
 let lastTouchX = 0;
 let lastTouchY = 0;
-let touchStartX = 0;
-let touchStartY = 0;
-let touchMoved = false;
+let lastTouchIdentifier = null;
+const activeTouches = {};
 let isTouchDevice = false;
 
 // UI Elements
@@ -294,38 +293,52 @@ function onTouchStart(event) {
     isTouchDevice = true;
     if (gameOverScreen.classList.contains('active')) return;
     
-    if (event.touches.length > 0) {
-        touchStartX = event.touches[0].clientX;
-        touchStartY = event.touches[0].clientY;
-        lastTouchX = touchStartX;
-        lastTouchY = touchStartY;
-        touchMoved = false;
-        
-        if (event.target.tagName !== 'BUTTON') {
-            event.preventDefault(); // Prevent double tap zoom/scroll
-        }
+    for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        activeTouches[touch.identifier] = {
+            startX: touch.clientX,
+            startY: touch.clientY,
+            moved: false
+        };
+    }
 
-        if (!isPlaying && event.target !== restartBtn) {
-            startGame();
-        }
+    if (event.target.tagName !== 'BUTTON') {
+        event.preventDefault(); // Prevent double tap zoom/scroll
+    }
+
+    if (!isPlaying && event.target !== restartBtn) {
+        startGame();
     }
 }
 
 function onTouchMove(event) {
     if (!isPlaying) return;
     
+    // Check all moved touches to see if they crossed the tap threshold
+    for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        const touchData = activeTouches[touch.identifier];
+        if (touchData) {
+            const dist = Math.hypot(touch.clientX - touchData.startX, touch.clientY - touchData.startY);
+            if (dist > 10) {
+                touchData.moved = true;
+            }
+        }
+    }
+    
+    // Use the first active touch for camera aiming
     if (event.touches.length > 0) {
-        const currentX = event.touches[0].clientX;
-        const currentY = event.touches[0].clientY;
+        const touch0 = event.touches[0];
         
-        // Check if moved more than 10 pixels to consider it a drag
-        const dist = Math.hypot(currentX - touchStartX, currentY - touchStartY);
-        if (dist > 10) {
-            touchMoved = true;
+        // If it's a new aiming finger, reset the last position to avoid camera jumps
+        if (lastTouchIdentifier !== touch0.identifier) {
+            lastTouchX = touch0.clientX;
+            lastTouchY = touch0.clientY;
+            lastTouchIdentifier = touch0.identifier;
         }
         
-        const deltaX = currentX - lastTouchX;
-        const deltaY = currentY - lastTouchY;
+        const deltaX = touch0.clientX - lastTouchX;
+        const deltaY = touch0.clientY - lastTouchY;
         
         const sensitivity = 0.005; // Slightly higher sensitivity for touch
         camera.rotation.y -= deltaX * sensitivity;
@@ -334,21 +347,31 @@ function onTouchMove(event) {
         // Clamp vertical rotation
         camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
         
-        lastTouchX = currentX;
-        lastTouchY = currentY;
-        
-        if (event.target.tagName !== 'BUTTON') {
-            event.preventDefault();
-        }
+        lastTouchX = touch0.clientX;
+        lastTouchY = touch0.clientY;
+    }
+    
+    if (event.target.tagName !== 'BUTTON') {
+        event.preventDefault();
     }
 }
 
 function onTouchEnd(event) {
-    if (!isPlaying) return;
-    
-    // If it was a quick tap (no drag movement), we shoot
-    if (!touchMoved) {
-        shoot();
+    for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        const touchData = activeTouches[touch.identifier];
+        
+        if (touchData) {
+            // If the finger was lifted without moving much, it's a tap! (Shoot)
+            if (!touchData.moved && isPlaying) {
+                shoot();
+            }
+            delete activeTouches[touch.identifier];
+        }
+        
+        if (touch.identifier === lastTouchIdentifier) {
+            lastTouchIdentifier = null; // Reset aiming finger
+        }
     }
     
     if (event.target.tagName !== 'BUTTON') {
